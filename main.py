@@ -6,7 +6,7 @@ from transformers import BertTokenizer, BertForMaskedLM
 bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 bert_model = BertForMaskedLM.from_pretrained('bert-base-uncased').eval()
 
-"""from transformers import XLNetTokenizer, XLNetLMHeadModel
+from transformers import XLNetTokenizer, XLNetLMHeadModel
 xlnet_tokenizer = XLNetTokenizer.from_pretrained('xlnet-base-cased')
 xlnet_model = XLNetLMHeadModel.from_pretrained('xlnet-base-cased').eval()
 
@@ -24,7 +24,7 @@ electra_model = ElectraForMaskedLM.from_pretrained('google/electra-small-generat
 
 from transformers import RobertaTokenizer, RobertaForMaskedLM
 roberta_tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
-roberta_model = RobertaForMaskedLM.from_pretrained('roberta-base').eval()"""
+roberta_model = RobertaForMaskedLM.from_pretrained('roberta-base').eval()
 
 top_k = 10
 
@@ -59,7 +59,7 @@ def get_all_predictions(text_sentence, top_clean=5):
     bert = decode(bert_tokenizer, predict[0, mask_idx, :].topk(top_k).indices.tolist(), top_clean)
 
     # ========================= XLNET LARGE =================================
-    """input_ids, mask_idx = encode(xlnet_tokenizer, text_sentence, False)
+    input_ids, mask_idx = encode(xlnet_tokenizer, text_sentence, False)
     perm_mask = torch.zeros((1, input_ids.shape[1], input_ids.shape[1]), dtype=torch.float)
     perm_mask[:, :, mask_idx] = 1.0  # Previous tokens don't see last token
     target_mapping = torch.zeros((1, 1, input_ids.shape[1]), dtype=torch.float)  # Shape [1, 1, seq_length] => let's predict one token
@@ -91,6 +91,11 @@ def get_all_predictions(text_sentence, top_clean=5):
     input_ids, mask_idx = encode(roberta_tokenizer, text_sentence, add_special_tokens=True)
     with torch.no_grad():
         predict = roberta_model(input_ids)[0]
-    roberta = decode(roberta_tokenizer, predict[0, mask_idx, :].topk(top_k).indices.tolist(), top_clean)"""
-
-    return {'bert': bert}
+    roberta = decode(roberta_tokenizer, predict[0, mask_idx, :].topk(top_k).indices.tolist(), top_clean)
+    
+    return {'bert': bert,
+            'xlnet': xlnet,
+            'xlm': xlm,
+            'bart': bart,
+            'electra': electra,
+            'roberta': roberta}
